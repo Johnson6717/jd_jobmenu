@@ -9,7 +9,30 @@ Config.Menu = true
 Config.Command = true
 -- end config --
 
-local ESX = exports['es_extended']:getSharedObject()
+ESX = nil
+local esxLegacy, esxR = pcall(
+    function()
+        if (ESX == nil) then
+            ESX = exports['es_extended']:getSharedObject()
+        end
+    end
+)
+
+if (not esxLegacy) then
+    CreateThread(
+        function()
+            while (ESX == nil) do
+                Wait(0)
+                TriggerEvent(
+                    'esx:getSharedObject',
+                    function(obj)
+                        ESX = obj
+                    end
+                )
+            end
+        end
+    )
+end
 
 if (Config.Menu) == true then
     RegisterCommand('+openjobmenu', function()
